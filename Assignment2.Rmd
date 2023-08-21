@@ -1,0 +1,109 @@
+---
+title: "Assign2.1"
+author: "Ambalika"
+date: "16/04/2021"
+output: html_document
+---
+
+# Statistical Summary for cases of Hepatits A in different US States from 1966-2011
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+install.packages('plyr', repos = "http://cran.us.r-project.org")
+library("plyr")
+install.packages("r package", repos = "http://cran.us.r-project.org")
+```
+
+
+## Research Question : To analyse the trend of Hepatitis A cases in US.
+
+### We shall be analysing the rate and case count per state all over US over state distribution and yearly count. This shall help us analyse the year which had the highest count of Hepatitis B and also the state with the highest count. This can help us further help answer as to whethere there was a downward trend over the years in Hepatitis due to advancement of technology and which state has the highest count and which state should CDC look into to control this disease.
+
+```{r echo=FALSE}
+
+library("dslabs")
+library("ggplot2")
+library("dplyr")
+```
+
+
+```{r include=FALSE}
+data("us_contagious_diseases")
+```
+
+```{r echo=TRUE}
+summary(us_contagious_diseases)
+diseases <- head(us_contagious_diseases,1000)
+unique(diseases[c("disease")])
+```
+
+
+## Figure 1 : Below graph displays the rate of Hepatits A cases(count vs population) against each year
+```{r echo=FALSE}
+
+diseases %>% 
+  group_by(year) %>%
+  summarize(rate = sum(count)/sum(population)*10000) %>%
+  ggplot(aes(year, rate)) + 
+  geom_line()
+
+```
+
+
+
+
+
+## Table 1 : The below is a tabular representation of total case counts of Hepatitis A per US state from the year 1966 - 2011
+```{r echo=FALSE}
+summary_table <- diseases %>% 
+  group_by(state) %>% 
+  summarise(number_of_cases=sum(count))
+
+knitr::kable(summary_table,
+ caption = "Cases of Hepatitis A in each US state",
+ digits = 2)
+```
+
+
+
+
+## Figure 2 : The below table is a boxplot representing the number of cases over the years recorded for each US state. 
+```{r echo=FALSE, fig.cap="Hello"}
+diseases %>%
+  group_by(year,state) %>% 
+  summarize(count) %>% 
+  ggplot(aes(year,count,color=state)) +
+  geom_boxplot()
+```
+
+
+
+
+## Table 2 : Below is a tabular representation of rate of Hepatitis A cases in the State of California(California has recorded the highest number of cases as compared to other US states). 
+```{r echo=FALSE}
+summary_table_1 <- diseases %>%
+  filter(state == "California") %>% 
+  mutate(rate = count / population * 10000) %>% 
+  mutate(state = reorder(state, rate)) %>% 
+  group_by(year, rate)
+
+knitr::kable(summary_table_1,
+ caption = "Rate of Hepatits A in the State of California for each year",
+ digits = 2)
+```
+
+
+
+# Conclusion
+
+1. From Figure 1 , we can that the highest number of cases were recorded in the year 1970.It further represents a downward trend in the cases, from which we can assume that there has been an advancement in the field of technology and health and more awareness. 
+2. From Table 1, we can conclude that California has had the highest number of cases from the year 1966-2011, followed by Illinois and Arizona. 
+3. From Figure 2, we can conclude as above that California has the highest number of cases, with an average of 4000 cases, average of California being significantly higher than the average of other US states. Hence California needed high time intervention at that time. 
+4. From Table 2, we can conclude that the rate of Hepatitis A cases in the California reduced from around 5 to 0.05. Which marks a significant decrease in the rate of cases, showing true progress in field of health sector. The max recorded rate was 5.63 in the year 1968 and the lowest rate being 0.05 in the year 2011. 
+
+## Hence we can conclude that the cases of Hepatitis B have gone down significantly in the United States of America from the year 1966 to 2011 especially the highly affected state of California. 
+
+
